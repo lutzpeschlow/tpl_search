@@ -329,21 +329,45 @@ def check_word_criteria(w):
 
 
 def read_input_attributes():
+    """
+    read_input_attributes()
+
+    read main attributes as  CREATE   or   SEARCH
+    and minor attributes as search keywords
+
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    planned automatic setup:
+    if there is no attribute file, the default is search
+    if there are no keyword attributes in submission, for example -s SOL 101 or -c PATH_NAME
+    there will be a request during runtime to input any keywords
+
+    set_flag = 0    -    attribute file
+    set_flag = 1    -    key words in submit command
+    set_flag = 2    -    input directly by user
+    """
     tpl_action = ""
     and_list = []
     not_list = []
-    file_in = open("input_attributes.txt","r")
-    line_list = file_in.readlines()
-    file_in.close()
-    if "CREATE" in line_list[0]:
-        tpl_action = "CREATE"
-    if "SEARCH" in line_list[0]:
-        tpl_action = "SEARCH"
-        and_list = [entry.upper().strip() for entry in line_list[1].strip().split()]
-        try:
-            not_list = not_list = [entry.upper().strip() for entry in line_list[2].strip().split()]
-        except:
-            not_list = []
+    set_flag = 0
+    try:
+        file_in = open("input_attributes.txt","r")
+        line_list = file_in.readlines()
+        file_in.close()
+        if "CREATE" in line_list[0]:
+            tpl_action = "CREATE"
+        if "SEARCH" in line_list[0]:
+            tpl_action = "SEARCH"
+            and_list = [entry.upper().strip() for entry in line_list[1].strip().split()]
+            try:
+                not_list = not_list = [entry.upper().strip() for entry in line_list[2].strip().split()]
+            except:
+                not_list = []
+    except:
+        set_flag = 1
+
+    if set_flag == 1:
+        pass
+        
     return tpl_action, and_list, not_list
 
 
