@@ -327,6 +327,29 @@ def check_word_criteria(w):
     return return_value      
 
 
+def read_rc_file():
+    """
+    read_rc_file
+    
+    the rc file contains:
+        the location of the tpl search database that was created with the tool 
+        and 
+        the location of the tpl path that is used to create the tpl database
+
+    example would be:
+       c:\\soft\\nastran\\V2023_1\\msc20231\\nast\\tpl
+    """
+    return_value = ""
+    try:
+        file_in = open("tpl_search.rc","r")
+        line_list = file_in.readlines()
+        file_in.close()
+    except:
+        print ("WARNING: missing rc file, will try out the default path for further actions ...")  
+    if len(line_list) > 0:
+        return_value = line_list[1].strip()
+    print (return_value)
+        
 
 def read_input_attributes():
     """
@@ -409,6 +432,7 @@ def main():
 
     os.chdir("c:\\tmp\\python\\tpl_search")
     print (os.getcwd(), sys.argv) 
+    tpl_path_loc = read_rc_file()
     tpl_action, and_list, not_list = read_input_attributes()
     print (tpl_action, and_list, not_list)
     tpl = Lib_Content()
