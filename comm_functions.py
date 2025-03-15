@@ -3,6 +3,15 @@ import sys, os, string, sqlite3, getopt
 from shutil import copyfile
 import tpl_settings
 
+def get_help():
+    """
+    get help for tpl search tool
+    """
+    print ("\nHelp for tpl search")
+    print ("=====================")
+    print ("tool for searching tpl library database file")
+    print ("use create or search")
+    print ("tpl_search.rc file should be defined for tpl database location\n")
 
 
 def copy_file(src, dst_folder):
@@ -79,18 +88,17 @@ def read_rc_file(tpl_obj):
        c:\\soft\\nastran\\V2023_1\\msc20231\\nast\\tpl
     """
     status = 0
+    print ("... reading rc file in folder: ",os.getcwd())
     try:
-        print (" read rc file in folder: ", os.getcwd())
         file_in = open("tpl_search.rc","r")
         line_list = file_in.readlines()
         file_in.close()
         if len(line_list) > 0:
             tpl_obj.Settings.Sql_Directory.set_path_name( line_list[0].strip() )
-    except:
-        print ("WARNING: no rc file ...")  
-        status = 1
-    
-    print (" current setting for sql path location is: ", tpl_obj.Settings.Sql_Directory.get_path_name() )
+        print (" current setting for sql path location is: ", tpl_obj.Settings.Sql_Directory.get_path_name() )
+    except:  
+        status = -1
+    # return value
     return status
         
 
@@ -112,19 +120,13 @@ def convert_input_to_arg_list(input_list, method):
         prepared list for argument processing
     """
     return_list = []
-    print (" convert input to arg list:", input_list, method)
-
     if method == "FILE":
         input_list = [e.strip() for e in input_list]
         return_list = input_list
-
     if method == "ARGS":
         return_list = input_list[1:]
-
     if method == "RAW":
         return_list = input_list
-
-    print (" return list is now: ", return_list)
     return return_list
 
 
@@ -134,7 +136,8 @@ def process_argument_list(tpl_obj, arg_list, method):
     process_argument_list
     
     use getopt library to process argument list and assign according values to settings object
-    and the sub-objects as Sql_Directory, Create and Search
+
+    method can be FILE,ARGS,RAW
     
     Arguments:
         tpl_obj:    object of tpl_library
@@ -144,19 +147,15 @@ def process_argument_list(tpl_obj, arg_list, method):
         status:     status value
     """
     status = 0
-    print (" process argument list:" , arg_list, method)
     # modification of arg list, depending on method
     arg_list = convert_input_to_arg_list(arg_list, method)
+    print ("method/arg list: ", method, arg_list)
     # processing arg list
-    short_options = "p:cs:n:"
-    long_options = ["sql_path_loc=", "create", "search=", "not="]
+    short_options = "cs:n:"
+    long_options = ["create", "search=", "not="]
     try:
         options, remainder = getopt.getopt(arg_list, short_options, long_options)
-        print ("options and remainder", options, remainder)
         for opt, arg in options:
-            if opt in ['-p', '--sql_path_loc']:
-                tpl_obj.Settings.Sql_Directory.set_path_name(arg) 
-                tpl_obj.Settings.Sql_Directory.set_source(method)
             if opt in ['-f','--create']:
                 tpl_obj.Settings.set_tpl_action("CREATE")
                 tpl_obj.Settings.Create.set_source(method)
@@ -166,12 +165,14 @@ def process_argument_list(tpl_obj, arg_list, method):
                 tpl_obj.Settings.Search.set_source(method)
             if opt in ['-n','--not']:
                 tpl_obj.Settings.Search.set_not_list(arg.split())                        
-        status = tpl_obj.Settings.approve_settings()      
+        status = tpl_obj.Settings.approve_settings()
     except:
         print ("no argument processing ...")
         status = -1
-    print ("process arg list status is now: ", status, arg_list)
     return status
+
+
+
 
 
 def read_input_attributes(tpl_obj, arg_list):
@@ -179,12 +180,16 @@ def read_input_attributes(tpl_obj, arg_list):
     read_input_attributes
 
     read main attributes as  CREATE   or   SEARCH
-    (optional the SQL PATH)
     and minor attributes as search keywords
 
-    PROCESS STEP 1   attribute file
-    PROCESS STEP 2   key words in submit command
-    PROCESS STEP 3   input directly by user
+    PROCESS STEP 1   attribute file                 input_attributes.txt
+    PROCESS STEP 2   key words in submit command    --create or --search
+    PROCESS STEP 3   input directly by user         same commands as in submission
+
+    different options are provided to transfer arguments to the tool,
+    via attribute file, keywords during submission, raw user input
+
+    these three options are processed one after the other
     """
     status = 0
     # 1 - FILE
@@ -195,8 +200,10 @@ def read_input_attributes(tpl_obj, arg_list):
         file_in.close()
         status = process_argument_list(tpl_obj, line_list, method)
     except:
+        print ("method/arg list: ", method)
         status = -1
     # 2 - ARGS
+    
     if status != 0:
         method = "ARGS"
         status = process_argument_list(tpl_obj, arg_list, method)
@@ -204,15 +211,15 @@ def read_input_attributes(tpl_obj, arg_list):
     if status != 0:
         method = "RAW"
         try:
-            tpl_action = input('tpl_action :')
-            options = input('options: ')
+            print("no attribute file and command line arguments, user raw input is required")
+            tpl_action = input('tpl_action  (use --create or --search)    :  ')
+            options    = input('options     (what keywords are searched)  :  ')
             status = process_argument_list(tpl_obj, [tpl_action, options], method)                            
         except:
             status = -1
-
     # debug settings
-    for line in tpl_obj.Settings.get_debug_output():
-        print (line)
-
+    # for line in tpl_obj.Settings.get_debug_output():
+    #     print (line)
+    # return status value
     return status
 

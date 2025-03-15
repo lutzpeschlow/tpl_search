@@ -16,7 +16,6 @@ def main():
     create - creates a key word database
     search - search in the key word database
     
-
     CREATE
     
     if create is selected, a tpl_database.db file as sqlite database is 
@@ -24,12 +23,14 @@ def main():
         c:\soft\nastran\V2022_4\msc20224\nast\tpl\tpl_database.db
     this database is then also used, if a search command is called
     
-    if search is selected there is a bundle of anding and not words:
     SEARCH
-    MDBULK MDMPLN
+
+    if searching, a bundle of anding and not words per line is possible, for example:
+    SEARCH
+    MDBULK MDMPLN SET GRID
     not_word
-    
-    the three lines of an input_attributes.txt will contain:
+
+    so the three lines of an input_attributes.txt will contain:
     search command
     anding word list
     not word list
@@ -39,42 +40,40 @@ def main():
     the process order of searching the database would be:
     - read input_attributes.txt
     - read arguments in submit command
-    - requires user to input during runtime
+    - requires user to input during-- runtime
 
+    the location of the database should be defined via a rc file:
+    tpl_search.rc
+    which contains the directory where the database should be created
+    or where the database is located that is used for the keyword search request
     """
-    search_result_list = []
-
-    # os.chdir("c:\\tmp\\python\\tpl_search")
-    print (os.getcwd(), sys.argv) 
-
+    #
+    # (0) CONTROL and SETTINGS
+    #
+    print (os.getcwd(), sys.argv[1:], sys.executable) 
     # instance of library content object
     tpl = tpl_lib_content.Lib_Content()
-
-    # read rc file and get sql path location, if there is no rc file the next option 
-    # to set the sql path would be in input attributes
-    comm_functions.read_rc_file(tpl)
-
-    # read input attributes create / search / set_sql_path
-    comm_functions.read_input_attributes(tpl, sys.argv)
-    
+    # read rc file and get sql path location
+    status = comm_functions.read_rc_file(tpl)
+    if status == -1:
+        print ("\nERROR: no rc file found\n")
+        comm_functions.get_help()
+        return status
+    # read input attributes create / search 
+    status = comm_functions.read_input_attributes(tpl, sys.argv)
+    if status == -1:
+        print ("\nERROR: no arguments or wrong arguments processed\n")
+        comm_functions.get_help()
+        return status
+    #
     # (1) CREATE
+    #
     if tpl.Settings.get_tpl_action() == "CREATE":
-        # os.chdir("c:\\tmp\\python\\tpl_search\\example_folders")
-        # os.chdir("c:\\soft\\nastran\\V2021_1\\msc20211\\nast\\doc\\tpl")
-        # os.chdir("c:\\soft\\nastran\\V2021_3\\msc20213\\nast\\tpl")
-        # os.chdir("c:\\soft\\nastran\\V2022_4\\msc20224\\nast\\tpl")
-        # C:\soft\nastran\V2023_1\msc20231\nast\tpl
-        # os.chdir("c:\\soft\\nastran\\V2023_1\\msc20231\\nast\\tpl")
         os.chdir(tpl.Settings.Sql_Directory.get_path_name())
-        
-        print (os.getcwd())
-        # set all files
+        # set all files, read content of files, create sqlite database
         tpl.set_file_dict(".")
-        # read content of files
         tpl.set_tpl_content()
-        # create sqlite database
         tpl.create_database()
-
         # DEBUG
         debug_list = []
         for line in tpl.get_debug_printout("MEM", True):
@@ -92,15 +91,11 @@ def main():
                 except:
                     pass
         # file_out.close()
-    
-
+    #
     # (2) SEARCH
-    # os.chdir("c:\\tmp\\python\\tpl_search\\example_folders")
-    # os.chdir("c:\\soft\\nastran\\V2021_1\\msc20211\\nast\\doc\\tpl")
-    # os.chdir("c:\\soft\\nastran\\V2021_3\\msc20213\\nast\\tpl")
-    # os.chdir("c:\\soft\\nastran\\V2022_4\\msc20224\\nast\\tpl")
-    
+    #
     if tpl.Settings.get_tpl_action()  == "SEARCH":
+        search_result_list = []
         os.chdir(tpl.Settings.Sql_Directory.get_path_name())
         status, search_result_list = tpl.search_in_database(tpl.Settings.Search.get_and_list(),tpl.Settings.Search.get_not_list())
 
