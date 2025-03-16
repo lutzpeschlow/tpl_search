@@ -17,13 +17,15 @@ CREATE
 SEACH
 
     if search is selected there is a bundle of anding and not words:
-    SEARCH
+    --search
     MDBULK MDMPLN
+    --not
     not_word
     
     the three lines of an input_attributes.txt will contain:
-    search command
+    <search command>
     anding word list
+    <not command>
     not word list
     
     the tpl_database.db is searched according required words

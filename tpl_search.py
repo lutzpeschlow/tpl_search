@@ -27,13 +27,15 @@ def main():
     SEARCH
 
     if searching, a bundle of anding and not words per line is possible, for example:
-    SEARCH
+    --search
     MDBULK MDMPLN SET GRID
+    --not
     not_word
 
     so the three lines of an input_attributes.txt will contain:
-    search command
+    <search command>
     anding word list
+    <not command>
     not word list
     
     the tpl_database.db is searched according required words
@@ -93,7 +95,7 @@ def main():
                     f.write(debug_list)
                 except:
                     pass
-        # file_out.close()
+        
     #
     # (2) SEARCH
     #
@@ -107,10 +109,8 @@ def main():
         root.title('tpl_search')
         root.geometry('1000x1000')
         root.config(bg='#999999')
-    
         my_listbox = Listbox(root, width=50, height=400, bg='#123456', fg='#EEEEEE')
         my_listbox.pack(pady=40, side='left')
-        
         # , width=40, height=10, selectmode=SINGLE   text=lb.get(ANCHOR)
         files_as_text = ""
         for item in search_result_list:
@@ -121,12 +121,9 @@ def main():
         my_text.pack(side='right')
         text = "for insert into the \n textbox ..."
         my_text.insert(END,files_as_text)
-    
         scroll_y = Scrollbar(root, orient="vertical", command=my_text.yview)
         scroll_y.pack(side="left", expand=True, fill="y")
-    
         my_text.configure(yscrollcommand=scroll_y.set)
-    
         # TKScrollTXT = tkscrolled.ScrolledText(10, width=width, height=height, wrap='word')
     
         def listbox_item_selected(event):
@@ -136,8 +133,7 @@ def main():
                 index = selection[0]
                 data = event.widget.get(index)
                 dst_folder = tpl.get_file_storage()
-                print ("dst_folder: ", dst_folder)
-                print (data)
+                print (data, dst_folder)
                 comm_functions.copy_file(data, dst_folder)
                 file_in = open(data,'r')
                 line_list = file_in.readlines()

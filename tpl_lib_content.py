@@ -38,18 +38,12 @@ class Lib_Content():
             return_list.append( ( file_id, self.get_file_name(file_id) ) )
         return len(tuple(return_list)), tuple(return_list)
 
-
-
     def set_file_storage(self):
-        path_obj = Path(os.path.join(os.getcwd(),"t2"))
-        print (path_obj)
-        path_obj.parent.mkdir(exist_ok=True)
-        # parents=True, exist_ok=True
+        path_obj = Path(os.path.join(os.getcwd(),"tpl_file_storage"))
+        path_obj.mkdir(exist_ok=True)
         self.file_storage = path_obj
  
-
-    def get_file_storage(self):
-        return self.file_storage
+    def get_file_storage(self):         return self.file_storage
 
 
     # topic: words
@@ -182,7 +176,6 @@ class Lib_Content():
         # open database
         db_connection = sqlite3.connect('tpl_database.db')
         cur = db_connection.cursor() 
-
         # search in database or printout error message
         try: 
             # get word ids from database for and_list and not_list
@@ -199,9 +192,6 @@ class Lib_Content():
                     if word == entry[1]:
                         not_ids[0].append(entry[0])
                         not_ids[1].append(entry[1])                         
-            # print ("and_ids: ", and_ids)
-            # print ("not_ids: ", not_ids)
-    
             # get according files
             print ("get according files ...")
             cur.execute("SELECT * FROM " + 'tpl_ids' + ";")
@@ -238,6 +228,7 @@ class Lib_Content():
                 # print (files)
             # not
             print (" not ...")
+            print (not_ids)
             store = []
             for i, word_id in enumerate(not_ids[0]):
                 num_files = len(files)

@@ -24,10 +24,8 @@ def copy_file(src, dst_folder):
     """
     src_folder, src_file = os.path.split(src)
     path_obj = Path(dst_folder)
-    path_obj.parent.mkdir(exist_ok=True)
+    path_obj.mkdir(exist_ok=True)
     dst = os.path.join(dst_folder, src_file)
-    print (dst_folder, src_folder, src_file, dst)
-
     # shutil.copyfile(src, dst)
     shutil.copy2(src, dst)
 
