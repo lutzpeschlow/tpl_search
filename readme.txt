@@ -33,3 +33,13 @@ SEACH
     - read arguments in submit command
     - requires user to input during runtime
 
+    if using commandline an example would be:
+        C:/soft/python/V3_7_3/python.exe tpl_search.py --search "SOL 400 CQUAD4"
+        or
+        C:/soft/python/V3_7_3/python.exe tpl_search.py --search "SOL 400 CQUAD4" --not NLTANS
+
+    if using raw user input an example would be:
+        --search
+        SOL 400 CQUAD4
+
+

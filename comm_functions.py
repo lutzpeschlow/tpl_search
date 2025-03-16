@@ -119,6 +119,7 @@ def convert_input_to_arg_list(input_list, method):
     Return:
         prepared list for argument processing
     """
+    print ("in conversion  ", input_list, method, type(input_list))
     return_list = []
     if method == "FILE":
         input_list = [e.strip() for e in input_list]
@@ -126,7 +127,7 @@ def convert_input_to_arg_list(input_list, method):
     if method == "ARGS":
         return_list = input_list[1:]
     if method == "RAW":
-        return_list = input_list
+        return_list = input_list    
     return return_list
 
 
@@ -153,8 +154,10 @@ def process_argument_list(tpl_obj, arg_list, method):
     # processing arg list
     short_options = "cs:n:"
     long_options = ["create", "search=", "not="]
+    
     try:
         options, remainder = getopt.getopt(arg_list, short_options, long_options)
+        print ("options, remainder: ", options, remainder)
         for opt, arg in options:
             if opt in ['-f','--create']:
                 tpl_obj.Settings.set_tpl_action("CREATE")
@@ -169,6 +172,11 @@ def process_argument_list(tpl_obj, arg_list, method):
     except:
         print ("no argument processing ...")
         status = -1
+    # debug output
+    output_list = tpl_obj.Settings.get_debug_output()
+    for line in output_list:
+        print (line)
+    # return status
     return status
 
 

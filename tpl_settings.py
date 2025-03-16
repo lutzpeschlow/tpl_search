@@ -8,8 +8,8 @@ class Search():
         self.not_list = []
         self.source = ""
 
-    def set_and_list(self, and_list):  self.and_list = and_list
-    def set_not_list(self, not_list):  self.not_list = not_list
+    def set_and_list(self, and_list):  self.and_list = [s.upper() for s in and_list]
+    def set_not_list(self, not_list):  self.not_list = [s.upper() for s in not_list]
     def set_source(self, source):      self.source = source
 
     def get_and_list(self):            return self.and_list

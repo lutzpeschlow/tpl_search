@@ -40,7 +40,7 @@ def main():
     the process order of searching the database would be:
     - read input_attributes.txt
     - read arguments in submit command
-    - requires user to input during-- runtime
+    - requires user to input during runtime
 
     the location of the database should be defined via a rc file:
     tpl_search.rc
