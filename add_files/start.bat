@@ -1,0 +1,3 @@
+REM    input_attributes.txt contains the command and keywords to search ....
+C:/soft/python/V3_7_3/python.exe tpl_search.py
+PAUSE
