@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys, os, string, sqlite3, getopt
+from pathlib import Path
 import tpl_settings
 import comm_functions
 
@@ -12,13 +13,11 @@ class Lib_Content():
         self.file_id_dict = {}
         self.word_counter = 0
         self.word_id_dict = {}
-        self.tpl_content = {}
-        self.working_directory = ""
-        
+        self.tpl_content = {}     
+        self.file_storage = ""
         self.Settings = tpl_settings.Settings()
 
     # topic: files
-    
     def set_file_dict(self, path):
        counter = 0
        for root, directories, files in os.walk(path):
@@ -38,6 +37,20 @@ class Lib_Content():
         for file_id in self.get_file_ids():
             return_list.append( ( file_id, self.get_file_name(file_id) ) )
         return len(tuple(return_list)), tuple(return_list)
+
+
+
+    def set_file_storage(self):
+        path_obj = Path(os.path.join(os.getcwd(),"t2"))
+        print (path_obj)
+        path_obj.parent.mkdir(exist_ok=True)
+        # parents=True, exist_ok=True
+        self.file_storage = path_obj
+ 
+
+    def get_file_storage(self):
+        return self.file_storage
+
 
     # topic: words
     def get_word_counter(self):        return len(self.word_id_dict)
@@ -120,8 +133,6 @@ class Lib_Content():
                 return_list.append( (key, entry) )
         return len(tuple(return_list)), tuple(return_list)
     
-    def set_working_dir(self, dir):    self.working_directory = dir
-    def get_working_dir(self):         return self.working_directory
 
 
 

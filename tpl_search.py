@@ -2,6 +2,7 @@
 import sys, os, string, sqlite3, getopt
 from tkinter import *
 from shutil import copyfile
+from pathlib import Path
 import tpl_lib_content
 import tpl_settings
 import comm_functions
@@ -51,8 +52,10 @@ def main():
     # (0) CONTROL and SETTINGS
     #
     print (os.getcwd(), sys.argv[1:], sys.executable) 
+    
     # instance of library content object
     tpl = tpl_lib_content.Lib_Content()
+    tpl.set_file_storage()
     # read rc file and get sql path location
     status = comm_functions.read_rc_file(tpl)
     if status == -1:
@@ -132,7 +135,8 @@ def main():
             if selection:
                 index = selection[0]
                 data = event.widget.get(index)
-                dst_folder = "c:\\tmp\\python\\tpl_search\\file_storage"
+                dst_folder = tpl.get_file_storage()
+                print ("dst_folder: ", dst_folder)
                 print (data)
                 comm_functions.copy_file(data, dst_folder)
                 file_in = open(data,'r')

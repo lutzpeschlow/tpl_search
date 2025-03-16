@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys, os, string, sqlite3, getopt
-from shutil import copyfile
+from pathlib import Path
+import shutil
 import tpl_settings
 
 def get_help():
@@ -14,18 +15,23 @@ def get_help():
     print ("tpl_search.rc file should be defined for tpl database location\n")
 
 
+
 def copy_file(src, dst_folder):
     """
     copy_file
 
     function to copy a file to certain destination
-    
     """
-    # dst_folder = "c:\\tmp\\python\\tpl_search\\file_storage"
     src_folder, src_file = os.path.split(src)
+    path_obj = Path(dst_folder)
+    path_obj.parent.mkdir(exist_ok=True)
     dst = os.path.join(dst_folder, src_file)
     print (dst_folder, src_folder, src_file, dst)
-    copyfile(src, dst)
+
+    # shutil.copyfile(src, dst)
+    shutil.copy2(src, dst)
+
+
 
 
 def check_word_criteria(w):
@@ -119,7 +125,6 @@ def convert_input_to_arg_list(input_list, method):
     Return:
         prepared list for argument processing
     """
-    print ("in conversion  ", input_list, method, type(input_list))
     return_list = []
     if method == "FILE":
         input_list = [e.strip() for e in input_list]
@@ -154,10 +159,8 @@ def process_argument_list(tpl_obj, arg_list, method):
     # processing arg list
     short_options = "cs:n:"
     long_options = ["create", "search=", "not="]
-    
     try:
         options, remainder = getopt.getopt(arg_list, short_options, long_options)
-        print ("options, remainder: ", options, remainder)
         for opt, arg in options:
             if opt in ['-f','--create']:
                 tpl_obj.Settings.set_tpl_action("CREATE")
@@ -173,9 +176,9 @@ def process_argument_list(tpl_obj, arg_list, method):
         print ("no argument processing ...")
         status = -1
     # debug output
-    output_list = tpl_obj.Settings.get_debug_output()
-    for line in output_list:
-        print (line)
+    # output_list = tpl_obj.Settings.get_debug_output()
+    # for line in output_list:
+    #     print (line)
     # return status
     return status
 
