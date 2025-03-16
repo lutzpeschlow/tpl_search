@@ -1,4 +1,0 @@
---search
-SOL CQUAD4 FORCE
---sql_path_loc
-C:\tmp\python\tpl_search\example_folders
